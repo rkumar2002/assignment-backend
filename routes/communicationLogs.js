@@ -14,7 +14,7 @@ router.get('/logs', async (req, res) => {
                 status : log.deliveryStatus,
                 sentAt : log.createdAt,
             })
-        )
+        ).reverse();
 
         res.status(200).json(response);
     } catch (err){
