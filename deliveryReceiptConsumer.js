@@ -21,25 +21,17 @@ const connectDB = async () => {
 
 
 async function processBatch() {
-  // If another process is already handling the batch, then return
   if (isProcessing || messageBatch.length === 0) {
     return;
   }
 
-  isProcessing = true;  // Process Lock
+  isProcessing = true;
 
-  const campaignId = messageBatch[0].campaignId;  // Retrieving campaignId from the first message in the batch
-  const sentCount = messageBatch.filter(msg => msg.deliveryStatus === 'SENT').length;  // Count SENT statuses
+  const campaignId = messageBatch[0].campaignId;
+  const sentCount = messageBatch.filter(msg => msg.deliveryStatus === 'SENT').length;
 
   try {
-    // Update the campaign's messagesSent count
-    await Campaign.updateOne(
-      { _id: campaignId },
-      { $inc: { messagesSent: sentCount } }  // Increment messagesSent by the SENT count in the batch
-    );
-    console.log(`Campaign ${campaignId} updated: ${sentCount} messagesSent`);
-
-    // Perform the batch update for communicationsLog
+    // Batch update for communicationsLog
     const bulkOps = messageBatch.map(({ communicationLogId, deliveryStatus }) => ({
       updateOne: {
         filter: { _id: communicationLogId },
@@ -48,12 +40,19 @@ async function processBatch() {
     }));
 
     await CommunicationsLog.bulkWrite(bulkOps);
-    console.log('Batch update successful');
+    console.log('Batch log update successful');
+
+    // Update the campaign's messagesSent count after log update is successful
+    await Campaign.updateOne(
+      { _id: campaignId },
+      { $inc: { messagesSent: sentCount } }
+    );
+    console.log(`Campaign ${campaignId} updated: ${sentCount} messagesSent`);
 
   } catch (error) {
     console.error('Error in batch update:', error);
   } finally {
-    // Flush the batch after processing and release the lock
+    // Flush the batch after processing
     messageBatch = [];
     isProcessing = false;
   }
