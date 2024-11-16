@@ -8,7 +8,7 @@ const CommunicationsLogSchema = new Schema({
   customerName: { type: String, required: true },
   customerEmail: { type: String, required: true },
   message: { type: String, required: true },
-  deliveryStatus: { type: String, enum: ['PENDING', 'SENT', 'FAILED'], default: 'PENDING' },
+  deliveryStatus: { type: String, enum: ['SENT', 'FAILED'], default: 'SENT' },
   createdAt: { type: Date, default: Date.now }
 });
 
