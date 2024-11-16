@@ -37,7 +37,7 @@ router.post('/campaign', async (req, res) => {
       const savedLog = await communicationLog.save();
 
       // Step 4: Call the Delivery Receipt API to update delivery status
-      await axios.post(`{process.env.BACKEND_BASE_URL}/delivery-receipt`, {
+      await axios.post(`${process.env.BACKEND_BASE_URL}/delivery-receipt`, {
         communicationLogId: savedLog._id,
         campaignId : savedLog.campaignId
       });
