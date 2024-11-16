@@ -23,7 +23,7 @@ router.post('/campaign', async (req, res) => {
     for (const customer of customers) {
       const personalizedMessage = message.replace('[Name]', customer.name);  // Personalize message
       
-      // Step 3: Log communication details in the CommunicationsLog table with initial status as "PENDING"
+      // Step 3: Log communication details in the CommunicationsLog table with initial status as "SENT"
       const communicationLog = new CommunicationsLog({
         campaignId: savedCampaign._id,
         audienceId,
