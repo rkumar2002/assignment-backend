@@ -31,7 +31,7 @@ router.post('/campaign', async (req, res) => {
         customerName: customer.name,
         customerEmail: customer.email,
         message: personalizedMessage,
-        deliveryStatus: 'PENDING'  // Initial status before delivery
+        deliveryStatus: 'SENT'  // Initial status before delivery
       });
 
       const savedLog = await communicationLog.save();
