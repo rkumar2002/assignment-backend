@@ -234,8 +234,6 @@ router.get('/audience', async (req, res) => {
         size: audience.size,
         customers : audience.customers,
       }));
-
-      console.log('Formatted response:', response);
   
       // Send the response back to the frontend
       res.json(response);
