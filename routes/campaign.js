@@ -3,6 +3,7 @@ const router = express.Router();
 const axios = require('axios');
 const Campaign = require('../models/Campaign');  // Assuming you have a Campaign model
 const CommunicationsLog = require('../models/CommunicationsLog'); // Assuming you have a CommunicationsLog model
+require('dotenv').config();
 
 // POST route to handle campaign creation and message sending
 router.post('/campaign', async (req, res) => {
@@ -36,7 +37,7 @@ router.post('/campaign', async (req, res) => {
       const savedLog = await communicationLog.save();
 
       // Step 4: Call the Delivery Receipt API to update delivery status
-      await axios.post('http://localhost:5000/api/delivery-receipt', {
+      await axios.post(`{process.env.BACKEND_BASE_URL}/delivery-receipt`, {
         communicationLogId: savedLog._id,
         campaignId : savedLog.campaignId
       });
