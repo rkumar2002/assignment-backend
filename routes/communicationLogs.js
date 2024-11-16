@@ -5,7 +5,7 @@ const router = express.Router();
 // Get all communication logs
 router.get('/logs', async (req, res) => {
     try{
-        const logs = await Log.find();
+        const logs = await Log.find().sort({ createdAt: -1 });
 
         const response = logs.map (log => ({
                 campaignId : log.campaignId,
@@ -14,7 +14,7 @@ router.get('/logs', async (req, res) => {
                 status : log.deliveryStatus,
                 sentAt : log.createdAt,
             })
-        ).reverse();
+        );
 
         res.status(200).json(response);
     } catch (err){
