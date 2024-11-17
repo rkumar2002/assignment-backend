@@ -28,7 +28,7 @@ router.post('/audience', async (req, res) => {
             if (field === 'last_visit_date') {
                 let currentDate = new Date(); // Get today's date
                 let pastDate = new Date(currentDate); 
-                pastDate.setMonth(pastDate.getMonth() - months);
+                pastDate.setMonth(pastDate.getMonth() - value);
 
                 // Build query for date-based comparisons
                 conditionQuery[field] = {};
@@ -136,7 +136,7 @@ router.post('/audience/estimate', async (req, res) => {
             if (field === 'last_visit_date') {
                 let currentDate = new Date(); // Get today's date
                 let pastDate = new Date(currentDate); 
-                pastDate.setMonth(pastDate.getMonth() - months);
+                pastDate.setMonth(pastDate.getMonth() - value);
 
                 // Build query for date-based comparisons
                 conditionQuery[field] = {};
