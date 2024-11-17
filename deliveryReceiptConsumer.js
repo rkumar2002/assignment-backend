@@ -27,11 +27,14 @@ async function processBatch() {
 
   isProcessing = true;
 
-  const campaignId = messageBatch[0].campaignId;
-  const sentCount = messageBatch.filter(msg => msg.deliveryStatus === 'SENT').length;
+  const session = await mongoose.startSession();
+  session.startTransaction();  // Start transaction
 
   try {
-    // Batch update for communicationsLog
+    const campaignId = messageBatch[0].campaignId;
+    const sentCount = messageBatch.filter(msg => msg.deliveryStatus === 'SENT').length;
+
+    // Update communications logs
     const bulkOps = messageBatch.map(({ communicationLogId, deliveryStatus }) => ({
       updateOne: {
         filter: { _id: communicationLogId },
@@ -39,20 +42,25 @@ async function processBatch() {
       }
     }));
 
-    await CommunicationsLog.bulkWrite(bulkOps);
+    await CommunicationsLog.bulkWrite(bulkOps, { session });
     console.log('Batch log update successful');
 
-    // Update the campaign's messagesSent count after log update is successful
+    // Update the campaign messagesSent count
     await Campaign.updateOne(
       { _id: campaignId },
-      { $inc: { messagesSent: sentCount } }
+      { $inc: { messagesSent: sentCount } },
+      { session }
     );
     console.log(`Campaign ${campaignId} updated: ${sentCount} messagesSent`);
 
+    // Commit the transaction after both updates are successful
+    await session.commitTransaction();
   } catch (error) {
-    console.error('Error in batch update:', error);
+    // Rollback transaction on failure
+    await session.abortTransaction();
+    console.error('Error in batch processing or transaction:', error);
   } finally {
-    // Flush the batch after processing
+    session.endSession();
     messageBatch = [];
     isProcessing = false;
   }
