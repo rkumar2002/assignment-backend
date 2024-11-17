@@ -5,7 +5,7 @@ const CampaignSchema = new mongoose.Schema({
   message: { type: String, required: true },
   audienceId: { type: mongoose.Schema.Types.ObjectId, ref: 'Audience', required: true },
   size: { type: Number, required: true },
-  messagesSent : { type : Number, default : 0 },
+  messagesSent : { type : Number, default : 1 },
   createdAt: { type: Date, default: Date.now }
 });
 
