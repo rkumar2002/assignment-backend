@@ -206,7 +206,7 @@ router.post('/audience/estimate', async (req, res) => {
 router.get('/audience', async (req, res) => {
     try {
       // Find all audience segments in the database
-      const audiences = await Audience.find();
+      const audiences = await Audience.find().sort({ createdAt: -1 });
         
       // Map over the audiences to only send relevant information to the frontend
       const response = audiences.map(audience => ({
