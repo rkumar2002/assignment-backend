@@ -6,7 +6,7 @@ const moment = require('moment');  // Library for date manipulation
 
 // API to create a new audience segment
 router.post('/audience', async (req, res) => {
-    const { name, conditions, logic } = req.body;  // Now 'logic' is global
+    const { name, conditions, logic } = req.body;  
 
     try {
         // Validate input
@@ -17,45 +17,36 @@ router.post('/audience', async (req, res) => {
         // Initialize the query array
         let query = [];
 
-        // Dynamically build the MongoDB query based on the conditions provided
+        // Dynamically build the MongoDB query
         conditions.forEach(condition => {
             const { field, operator, value } = condition;  // No more individual 'logic'
 
             console.log(`Processing condition with field: ${field}, operator: ${operator}, value: ${value}`);
 
-            // Check if the field is date-based, e.g., "last_visited_date"
+            // Check if the field is "last_visit_date"
             let conditionQuery = {};
             if (field === 'last_visit_date') {
-                let dateValue;
-
-                // Check if 'value' is a relative date like "3 months"
-                if (typeof value === 'string' && value.includes('month')) {
-                    const monthsAgo = parseInt(value.match(/\d+/)[0], 10); // Extract the number of months
-                    dateValue = moment().subtract(monthsAgo, 'months').toDate(); // Calculate the date X months ago
-                } else if (typeof value === 'string' && value.includes('days')) {
-                    const daysAgo = parseInt(value.match(/\d+/)[0], 10); // Extract the number of days
-                    dateValue = moment().subtract(daysAgo, 'days').toDate(); // Calculate the date X days ago
-                } else {
-                    dateValue = new Date(value); // If not relative, assume a specific date
-                }
+                let currentDate = new Date(); // Get today's date
+                let pastDate = new Date(currentDate); 
+                pastDate.setMonth(pastDate.getMonth() - months);
 
                 // Build query for date-based comparisons
                 conditionQuery[field] = {};
                 switch (operator) {
                     case '>':
-                        conditionQuery[field]['$gt'] = dateValue;
+                        conditionQuery[field]['$lt'] = pastDate;
                         break;
                     case '<':
-                        conditionQuery[field]['$lt'] = dateValue;
+                        conditionQuery[field]['$gt'] = pastDate;
                         break;
                     case '>=':
-                        conditionQuery[field]['$gte'] = dateValue;
+                        conditionQuery[field]['$lte'] = pastDate;
                         break;
                     case '<=':
-                        conditionQuery[field]['$lte'] = dateValue;
+                        conditionQuery[field]['$gte'] = pastDate;
                         break;
                     case '=':
-                        conditionQuery[field]['$eq'] = dateValue;
+                        conditionQuery[field]['$eq'] = pastDate;
                         break;
                     default:
                         throw new Error(`Unsupported operator: ${operator}`);
@@ -140,39 +131,30 @@ router.post('/audience/estimate', async (req, res) => {
 
             console.log(`Processing condition with field: ${field}, operator: ${operator}, value: ${value}`);
 
-            // Check if the field is date-based, e.g., "last_visited_date"
+            // Check if the field is "last_visit_date"
             let conditionQuery = {};
             if (field === 'last_visit_date') {
-                let dateValue;
-
-                // Check if 'value' is a relative date like "3 months"
-                if (typeof value === 'string' && value.includes('month')) {
-                    const monthsAgo = parseInt(value.match(/\d+/)[0], 10); // Extract the number of months
-                    dateValue = moment().subtract(monthsAgo, 'months').toDate(); // Calculate the date X months ago
-                } else if (typeof value === 'string' && value.includes('days')) {
-                    const daysAgo = parseInt(value.match(/\d+/)[0], 10); // Extract the number of days
-                    dateValue = moment().subtract(daysAgo, 'days').toDate(); // Calculate the date X days ago
-                } else {
-                    dateValue = new Date(value); // If not relative, assume a specific date
-                }
+                let currentDate = new Date(); // Get today's date
+                let pastDate = new Date(currentDate); 
+                pastDate.setMonth(pastDate.getMonth() - months);
 
                 // Build query for date-based comparisons
                 conditionQuery[field] = {};
                 switch (operator) {
                     case '>':
-                        conditionQuery[field]['$gt'] = dateValue;
+                        conditionQuery[field]['$lt'] = pastDate;
                         break;
                     case '<':
-                        conditionQuery[field]['$lt'] = dateValue;
+                        conditionQuery[field]['$gt'] = pastDate;
                         break;
                     case '>=':
-                        conditionQuery[field]['$gte'] = dateValue;
+                        conditionQuery[field]['$lte'] = pastDate;
                         break;
                     case '<=':
-                        conditionQuery[field]['$lte'] = dateValue;
+                        conditionQuery[field]['$gte'] = pastDate;
                         break;
                     case '=':
-                        conditionQuery[field]['$eq'] = dateValue;
+                        conditionQuery[field]['$eq'] = pastDate;
                         break;
                     default:
                         throw new Error(`Unsupported operator: ${operator}`);
