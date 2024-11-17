@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 
 const BATCH_SIZE = 10;  
-const BATCH_TIME_INTERVAL = 1000; 
+const BATCH_TIME_INTERVAL = 3000; 
 let messageBatch = [];
 let isProcessing = false;  // Flag to indicate if the batch is currently being processed
 
